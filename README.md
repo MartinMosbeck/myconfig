@@ -1,8 +1,8 @@
-# My dotfiles & other configs
+# My dotfiles, configs, tools
 
 Download & Install
 ------------------
-* git clone --recursive https://github.com/MartinMosbeck/dotfiles.git .dotfiles
+* git clone --recursive https://github.com/MartinMosbeck/dotfiles.git .myconfig
 * Set symlinks to files/folders in .dotfiles
 
 Update
