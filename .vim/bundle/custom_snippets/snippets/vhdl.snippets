@@ -1,0 +1,169 @@
+#if
+snippet if if
+	if(${1:cond}) then
+		${2:--code}
+	end if;
+#if/else
+snippet if if/else
+	if(${1:cond}) then
+		${2:--code}
+	else
+		${3:--code}
+	end if;
+#signal
+snippet sig
+	signal ${1:name} : ${2:type};
+#architecture
+snippet arch
+	architecture ${1:name} of ${2:ent_name} is
+		${3:}
+	begin
+		${4:}
+	end $1;
+#std_logic
+snippet sl
+	std_logic
+#std_logic_vector
+snippet slv
+	std_logic_vector(${1} downto ${2})${3}
+#subtype
+snippet sub
+	subtype ${1:name} is ${2:type};
+#ieee standard packages
+snippet 1164
+	library ieee;
+	use ieee.std_logic_1164.all;
+	use ieee.numeric_std.all;
+
+#case
+snippet case
+	case ${1:expression} is
+		when ${2:} => ${3:};
+	end case;
+#when
+snippet when
+	when ${1:choice} =>
+		${2:seqstmt}
+#for loop
+snippet for
+	for ${1:parameter} in ${2:range} loop
+		${3:seqstmt}
+	end loop;
+#package
+snippet pack
+	package ${1:package_name} is
+		${2:declarations}
+	end $1;
+#entity
+snippet ent
+	entity ${1:entity_name} is
+		generic
+		(
+			${2}
+		);
+		port
+		(
+			${3}
+		);
+	end $1;
+#component
+snippet comp
+	component ${1:comp_name}
+		port (
+			${2}
+		);
+	end component;
+#array
+snippet array
+	type ${1:type_name} is array (${2:range}) of ${3:element_type};
+#process
+snippet process
+	${1:label}: process (${2:sensitivity})
+		${3}
+	begin
+		${4}
+	end process $1;
+
+#procedure
+snippet procedure
+	procedure ${1:procedure_name} (${2:parameter_list}) is
+		${3}
+	begin
+		${4}
+	end $1;
+
+#function
+snippet function
+	function ${1:function_name} (${2:parameter_list}) return ${3:return_type} is
+		${4}
+	begin
+		${5}
+	end $1;
+
+#image function for std_logic_vectors ;
+snippet slvimage
+	function image(in_image : std_logic_vector) return string is
+		variable L : Line;  -- access type
+		variable W : String(1 to in_image'length) := (others => ' ');
+	begin
+		WRITE(L, in_image);
+		W(L.all'range) := L.all;
+		Deallocate(L);
+		return W;
+	end image;
+
+#clock process
+snippet clock
+	clk_process: process
+	begin
+		${1:clk_uut} <= '0';
+		wait for ${2:clk_period/2};
+		$1 <= '1';
+		wait for $2;
+	end process;
+
+# port map
+snippet pmap
+	port map
+	(
+		${1:}
+	);
+#process comment
+snippet pcom
+	-----------------------------------------------------------------------
+	-- ${1:}
+	-----------------------------------------------------------------------
+
+#sep seperator
+snippet sep
+	--
+	--------------------------------------------------------------------------------
+	--
+
+#Copyright etc
+snippet head
+	-----------------------------------------------------------------------
+	-- Entity: ${1:entity_name}
+	-- Author: Martin Mosbeck
+	-- Description: ${2:desc}
+	--
+	-- Copyright (C) 2018 Martin  Mosbeck <martin.mosbeck@tuwien.ac.at>
+	-- GPL V2 or later (see http://www.gnu.org/licenses/gpl2.txt)
+	-----------------------------------------------------------------------
+
+#state type
+snippet state
+	type fsm_type is
+	(
+		STATE1,
+		STATE2
+	);
+#internal signals for output in state machines
+snippet internal
+	signal ${1:name}_i, $1_i_next : ${2:type};
+
+snippet nolatch
+	${1:name}_next <= $1;
+
+snippet sync
+	${1:name} <= $1_next;

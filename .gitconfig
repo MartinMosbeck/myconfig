@@ -1,0 +1,11 @@
+[user]
+	name = Martin Mosbeck
+	email = martin.mosbeck@gmx.at
+[core]
+	editor = vim
+[diff]
+	tool = meld
+[merge]
+        tool = mymeld
+[mergetool "mymeld"]
+        cmd = meld "$LOCAL" "$MERGED" "$REMOTE"
