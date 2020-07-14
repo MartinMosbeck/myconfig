@@ -3,7 +3,7 @@
 Download & Install
 ------------------
 * git clone --recursive https://github.com/MartinMosbeck/dotfiles.git .myconfig
-* Set symlinks to files/folders in .dotfiles
+* Set symlinks to files/folders in .myconfig
 
 Update
 ------
