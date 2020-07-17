@@ -99,6 +99,7 @@ alias gitl="git log --stat"
 # commit all modified
 alias gitc="git commit -a"
 
+# shortcut to git status
 alias gits="git status"
 
 # tree view of repository
@@ -113,6 +114,21 @@ alias gitu="git fsck --unreachable |grep commit | cut -d\  -f3 \
 
 # follow the change history for a file
 alias gitf="git log --follow --all --stat -p --"
+
+# \brief: show differences of a commit in relation to n commits before in difftool
+# \param $1: sha, default:HEAD
+# \param $2: n, optional, default:1
+# \param $3: file, optional
+function gitd(){
+    commit_sha=${1:-HEAD}
+    param_n=${2:-1}
+    which_file="-- ${3:-}"
+
+    cmd="git difftool ${commit_sha}~$param_n $commit_sha $which_file"
+
+    echo "executing: $ $cmd"
+    eval $cmd
+}
 
 #-------- PYTHON DEV ----------- #
 alias venv-create="python3 -m venv .env"
