@@ -14,7 +14,7 @@ COMPLETION_WAITING_DOTS="true"
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git web-search sudo wd vi-mode zsh-autosuggestions)
+plugins=(git web-search sudo wd vi-mode zsh-autosuggestions zsh-syntax-highlighting docker docker-compose)
 
 export PATH=$HOME/bin:/usr/local/bin:$PATH
 # export MANPATH="/usr/local/man:$MANPATH"
