@@ -6,7 +6,7 @@ execute pathogen#infect()
 
 " save swap files to $HOME/.vimswap
 " automatic dir create only works on linux
-silent !mkdir -p $HOME/.vimswap 
+silent !mkdir -p $HOME/.vimswap
 set directory=$HOME/.vimswap//
 
 "--------------------------
@@ -70,6 +70,9 @@ set mat=2
 
 " In Makefiles DO NOT use spaces instead of tabs
 autocmd FileType make setlocal noexpandtab
+
+" 2 space indent for c and c++
+autocmd Filetype c,cpp setlocal shiftwidth=2 softtabstop=2 tabstop=2 expandtab
 
 " txt files
 autocmd BufRead,BufNewFile *.txt setlocal wrap linebreak nolist wm=0 cc=0 tw=0 syntax=off noexpandtab
