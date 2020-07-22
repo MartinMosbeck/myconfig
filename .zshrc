@@ -102,6 +102,9 @@ alias gitc="git commit -a"
 # shortcut to git status
 alias gits="git status"
 
+# shortcut to commit with message
+alias gitm="git commit -m"
+
 # tree view of repository
 alias gitt="git log --graph --full-history --all --color --date=short \
 --pretty=format:'%x1b[31m%h%x09%x1b[32m%d%x1b[0m%x20%ad %s'"
