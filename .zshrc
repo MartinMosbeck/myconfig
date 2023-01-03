@@ -14,7 +14,7 @@ COMPLETION_WAITING_DOTS="true"
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git web-search sudo wd vi-mode zsh-autosuggestions zsh-syntax-highlighting docker docker-compose)
+plugins=(git web-search sudo wd zsh-vi-mode zsh-system-clipboard  zsh-autosuggestions zsh-syntax-highlighting docker docker-compose)
 
 export PATH=$HOME/bin:/usr/local/bin:$PATH
 # export MANPATH="/usr/local/man:$MANPATH"
@@ -44,14 +44,36 @@ alias lsd='ls -d */'
 # list all directories + hidden
 alias lsad='ls -ad .*/ */'
 
+
+alias cls="ls -lha --color=always -F --group-directories-first |awk '{k=0;s=0;for(i=0;i<=8;i++){;k+=((substr(\$1,i+2,1)~/[rwxst]/)*2^(8-i));};j=4;for(i=4;i<=10;i+=3){;s+=((substr(\$1,i,1)~/[stST]/)*j);j/=2;};if(k){;printf(\"%0o%0o \",s,k);};print;}'"
+
 #diskusage
 alias diskuse="du -m -d 1 -h 2> /dev/null | sort -h"
 
 #Recursively searches the files in the current directory for string matches.
 #You can optionally provide a second glob argument to restrict what files to search
 function search() {
-    find . ${2:+-name "\"$2\""} -type f -print0 |
-    xargs -0 grep -n --color=auto "$1";
+    local search_expr="$1"
+    local filename_expr="$2"
+
+    if [[ -z $filename_expr ]]; then
+        find . -type f -print0 | xargs -0 grep -n --color=auto "$search_expr";
+    else
+        find . -name "$filename_expr" -type f -print0 \
+            | xargs -0 grep -n --color=auto "$search_expr";
+    fi
+}
+
+function searcho() {
+    local search_expr="$1"
+    local filename_expr="$2"
+
+    if [[ -z $filename_expr ]]; then
+        find . -type f -print0 | xargs -0 grep -oh --color=auto "$search_expr";
+    else
+        find . -name "$filename_expr" -type f -print0 \
+            | xargs -0 grep -oh --color=auto "$search_expr";
+    fi
 }
 
 alias zshconfig="vim ~/.zshrc"
@@ -117,6 +139,9 @@ alias gitu="git fsck --unreachable |grep commit | cut -d\  -f3 \
 
 # follow the change history for a file
 alias gitf="git log --follow --all --stat -p --"
+
+# dir diff with difftool
+alias gitdd="git difftool --dir-diff"
 
 # \brief: show differences of a commit in relation to n commits before in difftool
 # \param $1: sha, default:HEAD

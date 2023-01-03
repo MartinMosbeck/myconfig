@@ -6,17 +6,19 @@ execute pathogen#infect()
 
 " save swap files to $HOME/.vimswap
 " automatic dir create only works on linux
-silent !mkdir -p $HOME/.vimswap 
+silent !mkdir -p $HOME/.vimswap
 set directory=$HOME/.vimswap//
+
+set tabpagemax=300
 
 "--------------------------
 " --  Default formating  --
 "--------------------------
 set autoindent "Auto indent
 set smartindent "Smart indent
-set shiftwidth=4 "indent width (for << , >>)
-set softtabstop=4 " how many columns when hit Tab in insert mode
-set tabstop=4 " tab width
+set shiftwidth=2 "indent width (for << , >>)
+set softtabstop=2 " how many columns when hit Tab in insert mode
+set tabstop=2 " tab width
 set expandtab "expand tabs
 set guifont=Monospace\ 13 " Bigger font than normal
 syntax on " Syntax highlight
@@ -42,7 +44,7 @@ set ruler " show the cursor position all the time
 set conceallevel=0 " prevent conceal characters
 
 " colorscheme
-colorscheme molokai
+colorscheme molokai_noitalic
 set t_Co=256
 hi Search guibg=DarkGreen guifg=White
 
@@ -74,11 +76,18 @@ autocmd FileType make setlocal noexpandtab
 " txt files
 autocmd BufRead,BufNewFile *.txt setlocal wrap linebreak nolist wm=0 cc=0 tw=0 syntax=off noexpandtab
 
+" bash files
+autocmd BufRead,BufNewFile *.sh setlocal wrap shiftwidth=2 softtabstop=2 tabstop=2 expandtab
+
 " story files, TODO:expand settings for norm page
 autocmd BufRead,BufNewFile *.st setlocal wrap linebreak nolist wm=0 cc=0 tw=0 syntax=off noexpandtab columns=80
 
 " yaml files
-autocmd BufRead,BufNewFile *.yml setlocal shiftwidth=2 softtabstop=2 tabstop=2 expandtab
+autocmd BufRead,BufNewFile *.yml,*.yaml setlocal shiftwidth=2 softtabstop=2 tabstop=2 expandtab
+
+autocmd BufRead,BufNewFile CMakeLists.txt set filetype=cmake
+autocmd BufRead,BufNewFile CMakeSettings.txt set filetype=cmake
+autocmd BufNewFile,BufRead Jenkinsfile* setf groovy
 
 " prevent conceal characters in latex
 let g:tex_conceal = ""
@@ -188,6 +197,9 @@ nnoremap <leader>u YpVr
 
 " write to file if not opened with sudo with :w!!
 cnoremap w!! execute 'silent! write !sudo tee % >/dev/null' <bar> edit!
+
+nmap <leader>p "0p
+nmap <leader>P "0P
 
 "------------------------------------------------------------------------------
 "-----------------------------PLUGIN SPECIFIC ---------------------------------
