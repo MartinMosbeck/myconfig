@@ -31,3 +31,6 @@
 [submodule ".vim/bundle/ale"]
 	path = .vim/bundle/ale
 	url = https://github.com/dense-analysis/ale
+[submodule ".vim/bundle/linediff.vim"]
+	path = .vim/bundle/linediff.vim
+	url = https://github.com/AndrewRadev/linediff.vim

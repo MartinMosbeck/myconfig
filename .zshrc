@@ -118,6 +118,9 @@ alias gvimmul="gvim -O"
 # log with affected files
 alias gitl="git log --stat"
 
+# show all branches
+alias gitb="git branch -a"
+
 # commit all modified
 alias gitc="git commit -a"
 
@@ -156,6 +159,13 @@ function gitd(){
 
     echo "executing: $ $cmd"
     eval $cmd
+}
+
+# Push new branch upstream
+function gitp() {
+  local branchname=$(git rev-parse --abbrev-ref HEAD)
+  local upstream=${1:-origin}
+  git push --set-upstream $upstream $branchname
 }
 
 #-------- PYTHON DEV ----------- #
@@ -212,9 +222,34 @@ function yubissh() {
 	fi
 }
 
+######################
+#    APP SHORTCUTS   #
+######################
+
+# bash into docker container
+function dbash() {
+  docker exec -it $1 bash
+}
+
+# activate/deactivate wireguard
+function wire () {
+  conf="$1"
+  operation="$2"
+
+  if [[ $operation == "d" ]]; then
+    operation="down"
+  else
+    operation="up"
+  fi
+
+  wg-quick $operation $conf
+}
+
 ##################################
 # INCLUDE MACHINE LOCAL SETTINGS #
 ##################################
 if [[ -f ~/.zshrc.local ]]; then
     source ~/.zshrc.local
 fi
+
+alias bb="xclip -sel clip ~/data/bitbucket-app-pw.txt"
