@@ -1,11 +1,17 @@
-[user]
-	name = Martin Mosbeck
-	email = martin.mosbeck@gmx.at
 [core]
-	editor = vim
+  editor = vim
 [diff]
-	tool = meld
+  tool = meld
 [merge]
-        tool = mymeld
+  tool = mymeld
 [mergetool "mymeld"]
-        cmd = meld "$LOCAL" "$MERGED" "$REMOTE"
+  cmd = meld "$LOCAL" "$MERGED" "$REMOTE"
+[color]
+  ui = auto
+[rerere] # auto reapply resulutions
+  enabled = true
+  autoUpdate = true
+[branch]
+  sort = -committerdate
+[include]
+  path = ~/.myconfig/local/.gitconfig

@@ -1,39 +1,60 @@
-# Path to your oh-my-zsh installation.
-export ZSH=$HOME/.oh-my-zsh
+################################
+#        PLUGINS, THEME        #
+################################
+source ~/.myconfig/support/antigen.zsh
 
-# Set name of the theme to load.
-ZSH_THEME="gallois"
+# Load the oh-my-zsh's library.
+antigen use oh-my-zsh
 
+# Load the theme
+antigen theme gallois
+
+antigen bundle git
+antigen bundle sudo
+antigen bundle wd
+antigen bundle jeffreytse/zsh-vi-mode
+antigen bundle zsh-system-clipboard
+antigen bundle zsh-users/zsh-autosuggestions
+antigen bundle zsh-users/zsh-syntax-highlighting
+antigen bundle docker
+antigen bundle docker-compose
+antigen bundle zsh-git-prompt/zsh-git-prompt
+
+# Tell Antigen that you're done.
+antigen apply
+
+################################
+#        GENERAL SETTINGS      #
+################################
 # How often to auto-update (in days).
 export UPDATE_ZSH_DAYS=14
 
 # Display red dots whilst waiting for completion.
 COMPLETION_WAITING_DOTS="true"
 
-# Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
-# Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
-# Example format: plugins=(rails git textmate ruby lighthouse)
-# Add wisely, as too many plugins slow down shell startup.
-plugins=(git web-search sudo wd zsh-vi-mode zsh-system-clipboard  zsh-autosuggestions zsh-syntax-highlighting docker docker-compose)
-
 export PATH=$HOME/bin:/usr/local/bin:$PATH
 # export MANPATH="/usr/local/man:$MANPATH"
 
-source $ZSH/oh-my-zsh.sh
-
-function zle-line-init zle-keymap-select {
-    VIM_PROMPT="%{$fg_bold[yellow]%} [% NORMAL]%  %{$reset_color%}"
-    RPS1="${${KEYMAP/vicmd/$VIM_PROMPT}/(main|viins)/}$(git_custom_status) $EPS1"
-    zle reset-prompt
-}
-
-zle -N zle-line-init
-zle -N zle-keymap-select
 export KEYTIMEOUT=1
 
 export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
 
+# PROMPT SETUP
+git_branch() {
+    git rev-parse --abbrev-ref HEAD 2>/dev/null
+}
+
+git_status_color() {
+    if [[ -n $(git status -s) ]]; then
+        echo "%F{red}" # Use red if there are changes
+    else
+        echo "%F{green}" # Use green if there are no changes
+    fi
+}
+
+# Customize the prompt
 PROMPT='%{$fg[white]%}%n@%M:%{$fg[cyan]%}[%~% ]%(?.%{$fg[green]%}.%{$fg[red]%})%B$%b '
+RPS1='[$(git_status_color)$(git_branch)%f]'
 
 ################################
 #    ALIASES, FUNCTIONS        #
@@ -248,8 +269,6 @@ function wire () {
 ##################################
 # INCLUDE MACHINE LOCAL SETTINGS #
 ##################################
-if [[ -f ~/.zshrc.local ]]; then
-    source ~/.zshrc.local
+if [[ -f ~/.myconfig/local/.zshrc ]]; then
+    source ~/.myconfig/local/.zshrc
 fi
-
-alias bb="xclip -sel clip ~/data/bitbucket-app-pw.txt"
