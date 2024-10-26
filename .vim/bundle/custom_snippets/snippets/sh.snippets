@@ -1,0 +1,34 @@
+# Executable
+snippet #!
+	#!/bin/bash
+
+# help text
+snippet help
+	show_help() {
+	  grep "^#/" "\$0" | cut -c 4-
+	}
+
+# parse_args
+snippet args
+	parse_args() {
+	  while [[ $# -gt 0 ]]; do
+	    case "\$1" in
+	      --value|-v)
+	        value=\$2
+	        shift 1
+	        ;;
+
+	      -h|--help|help)
+	        show_help
+	        exit 0
+	        ;;
+
+	      *)
+	        echo "Unknown option \$1"
+	        ;;
+	    esac
+	    shift
+	  done
+	}
+
+	parse_args "$@"

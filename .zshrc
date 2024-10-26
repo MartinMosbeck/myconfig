@@ -18,7 +18,6 @@ antigen bundle zsh-users/zsh-autosuggestions
 antigen bundle zsh-users/zsh-syntax-highlighting
 antigen bundle docker
 antigen bundle docker-compose
-antigen bundle zsh-git-prompt/zsh-git-prompt
 
 # Tell Antigen that you're done.
 antigen apply
@@ -54,7 +53,7 @@ git_status_color() {
 
 # Customize the prompt
 PROMPT='%{$fg[white]%}%n@%M:%{$fg[cyan]%}[%~% ]%(?.%{$fg[green]%}.%{$fg[red]%})%B$%b '
-RPS1='[$(git_status_color)$(git_branch)%f]'
+
 
 ################################
 #    ALIASES, FUNCTIONS        #
@@ -85,15 +84,43 @@ function search() {
     fi
 }
 
-function searcho() {
+# Like search, but opens files containing the search in gvim -p
+function searchg() {
     local search_expr="$1"
     local filename_expr="$2"
 
+    escaped_search_expr=$(printf '%s\n' "$search_expr" | sed 's/[]\/$*.^[]/\\&/g')
+
+    # Create a temporary file to store the list of filenames
+    tmpfile=$(mktemp)
+
+    # Find files containing the search pattern and save the filenames
+    # to the temporary file
     if [[ -z $filename_expr ]]; then
-        find . -type f -print0 | xargs -0 grep -oh --color=auto "$search_expr";
+      find . -type f -print0 | xargs -0 grep -l "$search_expr" > "$tmpfile"
     else
         find . -name "$filename_expr" -type f -print0 \
-            | xargs -0 grep -oh --color=auto "$search_expr";
+            | xargs -0 grep -l --color=auto "$search_expr" > "$tmpfile";
+    fi
+
+    # Read the filenames from the temporary file into an array
+    files=()
+    while IFS= read -r file; do
+        files+=("$file")
+    done < "$tmpfile"
+
+    # Remove the temporary file
+    rm "$tmpfile"
+
+    # Check if files array is not empty
+    if [ ${#files[@]} -gt 0 ]; then
+      # Convert array to space-separated string for gvim
+      files_list=$(printf "%q " "${files[@]}")
+
+      # Open files in gvim as tabs and perform the search
+      eval gvim -p $files_list -c "/$escaped_search_expr"
+    else
+      echo "No files found containing the search pattern."
     fi
 }
 
@@ -189,6 +216,11 @@ function gitp() {
   git push --set-upstream $upstream $branchname
 }
 
+# ---------- ALIASES RUST ---------- #
+alias cr="cargo run"
+alias cb="cargo build"
+
+
 #-------- PYTHON DEV ----------- #
 alias venv-create="python3 -m venv .env"
 alias venv-activate=". .env/bin/activate"
@@ -203,6 +235,13 @@ function dirsum() {
         sort -k 2 | md5sum
     cd - > /dev/null
 }
+
+# see details x509 cert
+function certinfo() {
+  cert="$1"
+  openssl x509 -in "$cert" -text -noout
+}
+
 
 ######################
 # SSH KEY MANAGEMENT #
