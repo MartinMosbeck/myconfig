@@ -242,6 +242,10 @@ function certinfo() {
   openssl x509 -in "$cert" -text -noout
 }
 
+function csrinfo() {
+  csr="$1"
+  openssl req -in "$csr" -noout -text
+}
 
 ######################
 # SSH KEY MANAGEMENT #
