@@ -31,7 +31,7 @@ export UPDATE_ZSH_DAYS=14
 # Display red dots whilst waiting for completion.
 COMPLETION_WAITING_DOTS="true"
 
-export PATH=$HOME/bin:/usr/local/bin:$PATH
+export PATH=$HOME/bin:/usr/local/bin:$HOME/.local/bin:$PATH
 # export MANPATH="/usr/local/man:$MANPATH"
 
 export KEYTIMEOUT=1
@@ -126,6 +126,7 @@ function searchg() {
 
 alias zshconfig="vim ~/.zshrc"
 alias n.="nemo . &"
+alias d.="dolphin . &"
 
 alias ..="cd .."
 alias ...="cd ../.."
@@ -194,6 +195,9 @@ alias gitf="git log --follow --all --stat -p --"
 # dir diff with difftool
 alias gitdd="git difftool --dir-diff"
 
+#find on which branch a commit is
+alias gitbb="git branch -a --contains"
+
 # \brief: show differences of a commit in relation to n commits before in difftool
 # \param $1: sha, default:HEAD
 # \param $2: n, optional, default:1
@@ -239,7 +243,7 @@ function dirsum() {
 # see details x509 cert
 function certinfo() {
   cert="$1"
-  openssl x509 -in "$cert" -text -noout
+  openssl x509 -text -noout -in "$cert"
 }
 
 function csrinfo() {

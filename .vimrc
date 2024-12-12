@@ -85,6 +85,9 @@ autocmd BufRead,BufNewFile *.st setlocal wrap linebreak nolist wm=0 cc=0 tw=0 sy
 " yaml files
 autocmd BufRead,BufNewFile *.yml,*.yaml setlocal shiftwidth=2 softtabstop=2 tabstop=2 expandtab
 
+" json
+autocmd BufRead,BufNewFile *.json setlocal filetype=json syntax=on foldmethod=syntax
+
 autocmd BufRead,BufNewFile CMakeLists.txt set filetype=cmake
 autocmd BufRead,BufNewFile CMakeSettings.txt set filetype=cmake
 autocmd BufNewFile,BufRead Jenkinsfile* setf groovy
