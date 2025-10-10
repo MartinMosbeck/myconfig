@@ -1,6 +1,8 @@
 [core]
   editor = vim
 [diff]
+  algorithm = histogram
+  renames = true
   tool = meld
 [merge]
   tool = mymeld
@@ -13,5 +15,9 @@
   autoUpdate = true
 [branch]
   sort = -committerdate
+[init]
+  defaultBranch=master
+[help]
+  autocorrect = prompt
 [include]
   path = ~/.myconfig/local/.gitconfig

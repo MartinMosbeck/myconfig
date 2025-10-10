@@ -20,10 +20,12 @@ set shiftwidth=2 "indent width (for << , >>)
 set softtabstop=2 " how many columns when hit Tab in insert mode
 set tabstop=2 " tab width
 set expandtab "expand tabs
-set guifont=Monospace\ 13 " Bigger font than normal
+set guifont=Monospace\ 13 " Bigger font normal, 13, teaching 17
 syntax on " Syntax highlight
 set colorcolumn=81
 set textwidth=80
+set encoding=utf-8
+set fileencoding=utf-8
 
 "-------------------------
 " --  Editor behavior   --
@@ -126,6 +128,11 @@ vnoremap <c-f> y<ESC>/<c-r>"<CR>
 " Tab navigation with Ctrl-Arrow
 nnoremap <C-Left> :tabprevious<CR>
 nnoremap <C-Right> :tabnext<CR>
+
+" Replace current word with last yanked text
+nnoremap ö viw"0p
+" Replace visual selection with last yanked text
+vnoremap ö "0p
 
 " Merge a tab into a split in the previous window
 function! MergeTabs()

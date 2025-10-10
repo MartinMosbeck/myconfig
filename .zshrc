@@ -34,6 +34,8 @@ COMPLETION_WAITING_DOTS="true"
 export PATH=$HOME/bin:/usr/local/bin:$HOME/.local/bin:$PATH
 # export MANPATH="/usr/local/man:$MANPATH"
 
+export EDITOR="vim"
+
 export KEYTIMEOUT=1
 
 export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
@@ -126,7 +128,7 @@ function searchg() {
 
 alias zshconfig="vim ~/.zshrc"
 alias n.="nemo . &"
-alias d.="dolphin . &"
+alias d.="dolphin --new-window . &"
 
 alias ..="cd .."
 alias ...="cd ../.."
@@ -166,6 +168,7 @@ alias gvimmul="gvim -O"
 # ---------- ALIASES GIT ---------- #
 # log with affected files
 alias gitl="git log --stat"
+alias gitlo="git log --stat --oneline"
 
 # show all branches
 alias gitb="git branch -a"
@@ -173,8 +176,8 @@ alias gitb="git branch -a"
 # commit all modified
 alias gitc="git commit -a"
 
-# shortcut to git status
-alias gits="git status"
+# short status of repo
+alias gits="git status -sb --renames"
 
 # shortcut to commit with message
 alias gitm="git commit -m"
@@ -197,6 +200,9 @@ alias gitdd="git difftool --dir-diff"
 
 #find on which branch a commit is
 alias gitbb="git branch -a --contains"
+
+# swich to prevoius checked out branch
+alias git-="git checkout -"
 
 # \brief: show differences of a commit in relation to n commits before in difftool
 # \param $1: sha, default:HEAD
@@ -222,7 +228,9 @@ function gitp() {
 
 # ---------- ALIASES RUST ---------- #
 alias cr="cargo run"
+alias crr="cargo run --release"
 alias cb="cargo build"
+alias cbr="cargo build --release"
 
 
 #-------- PYTHON DEV ----------- #
@@ -249,6 +257,11 @@ function certinfo() {
 function csrinfo() {
   csr="$1"
   openssl req -in "$csr" -noout -text
+}
+
+function sshcertinfo {
+  cert="$1"
+  ssh-keygen -L -f "$cert"
 }
 
 ######################
@@ -312,6 +325,16 @@ function wire () {
 
   wg-quick $operation $conf
 }
+
+which thefuck &> /dev/null && eval $(thefuck --alias)
+
+#################################
+#           JUJUTSU VCS         #
+#################################
+autoload -U compinit
+compinit
+source <(jj util completion zsh)
+alias jjlog="watch -n 1 --color jj log --color=always"
 
 ##################################
 # INCLUDE MACHINE LOCAL SETTINGS #
