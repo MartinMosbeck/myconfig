@@ -66,7 +66,6 @@ alias lsd='ls -d */'
 # list all directories + hidden
 alias lsad='ls -ad .*/ */'
 
-
 alias cls="ls -lha --color=always -F --group-directories-first |awk '{k=0;s=0;for(i=0;i<=8;i++){;k+=((substr(\$1,i+2,1)~/[rwxst]/)*2^(8-i));};j=4;for(i=4;i<=10;i+=3){;s+=((substr(\$1,i,1)~/[stST]/)*j);j/=2;};if(k){;printf(\"%0o%0o \",s,k);};print;}'"
 
 #diskusage
@@ -74,6 +73,7 @@ alias diskuse="du -m -d 1 -h 2> /dev/null | sort -h"
 
 #Recursively searches the files in the current directory for string matches.
 #You can optionally provide a second glob argument to restrict what files to search
+# Alternative for busybox: find . -type f -exec grep -Hn "pattern" {} \;
 function search() {
     local search_expr="$1"
     local filename_expr="$2"
@@ -161,6 +161,20 @@ function extract () {
   fi
 }
 
+sshping() {
+    local host
+    host=$(ssh -G "$1" | awk '/^hostname / {print $2}')
+    echo "Pinging $host ($1)..."
+    ping "$host"
+}
+
+sshuntil() {
+  until ssh -o ConnectTimeout=5 -o BatchMode=yes -o StrictHostKeyChecking=no $1 echo -e "Online" 2> /dev/null; do
+      echo -n "."
+      sleep 3
+  done
+}
+
 # ---------- ALIAS gvim ---------- #
 alias gvimtab="gvim -p"
 alias gvimmul="gvim -O"
@@ -170,8 +184,98 @@ alias gvimmul="gvim -O"
 alias gitl="git log --stat"
 alias gitlo="git log --stat --oneline"
 
-# show all branches
-alias gitb="git branch -a"
+# show branches, give copy to clipboard possibility
+
+# local
+gitbl() {
+  gitb_helper "local"
+}
+
+gitbr() {
+  gitb_helper "remote"
+}
+
+gitb() {
+  gitb_helper "all"
+}
+
+gitb_helper() {
+
+    local mode="$1"
+    local mode_flag=""
+    if [[ $mode == "local" ]]; then
+      mode_flag="-l"
+    elif [[ $mode == "remote" ]]; then
+      mode_flag="-r"
+    elif [[ $mode == "all" ]]; then
+      mode_flag="-a"
+    fi
+
+    # Color codes for print -P
+    local c_key="%F{cyan}"
+    local c_branch="%F{green}" #TODO: for local branch only
+    local c_branch_remote="%F{red}" #TODO: for local branch only
+    local c_reset="%f"
+
+    # Get branches
+    local branches
+    branches=("${(@f)$(git branch ${mode_flag} | sed 's/^[* ] *//')}")
+
+    # Keys to choose from
+    local keys=( {0..9} {a..z} {A..Z} )
+
+    # Determine longest branch for alignment
+    local maxlen=0
+    for b in $branches; do
+        (( ${#b} > maxlen )) && maxlen=${#b}
+    done
+
+    print "Available branches:"
+
+    # Print each line with aligned formatting + print -P colors
+    for i in {1..$#branches}; do
+        local idx=$((i-1))
+        (( idx >= ${#keys} )) && break
+
+        local key="${keys[$((idx+1))]}"
+        local branch="${branches[$i]}"
+
+        if [[ "$branch" == remotes/* ]]; then
+          color="$c_branch_remote"
+        else
+          color="$c_branch"
+        fi
+
+        # formatted branch text
+        local padded=$(printf "%-*s" $maxlen "$branch")
+
+        # print with colors expanded
+        print -P "${c_key}[${key}]${c_reset} ${color}${padded}${c_reset}"
+    done
+
+    # Read key
+    echo -n "Press key to copy branch name: "
+    local key
+    read -k 1 key
+    echo
+
+    # Find selected
+    local pos=-1
+    for i in {1..${#keys}}; do
+        [[ "$key" == "${keys[$i]}" ]] && pos=$((i-1))
+    done
+
+    if (( pos < 0 || pos >= $#branches )); then
+        print "Invalid key."
+        return 1
+    fi
+
+    local selected="${branches[$((pos+1))]}"
+
+    printf "%s" "$selected" | xclip -selection clipboard
+
+    print "Copied: $selected"
+}
 
 # commit all modified
 alias gitc="git commit -a"
@@ -234,8 +338,8 @@ alias cbr="cargo build --release"
 
 
 #-------- PYTHON DEV ----------- #
-alias venv-create="python3 -m venv .env"
-alias venv-activate=". .env/bin/activate"
+alias venv-create="python3 -m venv .venv"
+alias venv-activate=". .venv/bin/activate"
 
 #-------- OTHER ALIASES ----------- #
 
@@ -248,6 +352,11 @@ function dirsum() {
     cd - > /dev/null
 }
 
+function keyinfo {
+  key="$1"
+  openssl pkey -in "$key" -text -noout
+}
+
 # see details x509 cert
 function certinfo() {
   cert="$1"
@@ -256,7 +365,18 @@ function certinfo() {
 
 function csrinfo() {
   csr="$1"
-  openssl req -in "$csr" -noout -text
+  openssl req -noout -text -in "$csr"
+}
+
+function certverify() {
+  ca="$1"
+  cert="$2"
+  openssl verify -partial_chain -CAfile "$ca" "$cert"
+}
+
+function sshkeyinfo {
+  key="$1"
+  ssh-keygen -lf "$key"
 }
 
 function sshcertinfo {
@@ -334,7 +454,61 @@ which thefuck &> /dev/null && eval $(thefuck --alias)
 autoload -U compinit
 compinit
 source <(jj util completion zsh)
-alias jjlog="watch -n 1 --color jj log --color=always"
+
+alias js="jj status"
+alias jl="jj log"
+alias jla="jj log 'all()'"
+alias jll="jj log --stat"
+alias jlog="watch -n 1 --color jj log --color=always"
+alias je="jj edit"
+alias jn="jj new"
+alias jd="jj describe"
+alias ja="jj abandon"
+alias jr="jj rebase"
+alias jsq="jj squash"
+alias jop="jj op log"
+alias ju="jj undo"
+alias jadd="jj file track"
+alias jgp="jj git push"
+alias jgf="jj git fetch"
+alias jbc="jj bookmark create"
+alias jbm="jj bookmark move"
+alias jba="jj bookmark advance"
+alias jbl="jj bookmark list"
+alias jbt="jj bookmark track"
+alias jdiff="jj diffedit --tool meld"
+
+# Prepopulate description with ticket number of nearest bookmark
+jdd() {
+  local ticket
+  ticket=$(jj log -r 'heads(::@ & bookmarks())' --no-graph -T 'bookmarks' 2>/dev/null \
+    | grep -oE 'ME[A-Z][0-9]+-[0-9]+' \
+    | head -1)
+
+  if [ -n "$ticket" ]; then
+
+    jj desc --config "template-aliases.default_commit_description='\"$ticket \\n\"'" "$@"
+    #jj desc --editor -m "$ticket "
+  else
+    jj desc "$@"
+  fi
+}
+
+# Create remote track to closest bookmark
+jbtt() {
+  local remote=${1:-origin}
+  local bookmark=$(jj log -r "heads(::@ & bookmarks())" \
+    --no-graph -T "local_bookmarks.map(|b| b.name() ++ \"\n\")" | \
+    head -1)
+  echo "Set remote for $bookmark at remote $remote"
+  set -x
+  jj bookmark track $bookmark --remote=$remote
+}
+
+# create parallel feature branch between bookmark dev-root and dev-merge
+function jbfeat() {
+  jn -A dev-root -B dev-merge
+}
 
 ##################################
 # INCLUDE MACHINE LOCAL SETTINGS #
