@@ -31,7 +31,7 @@ export UPDATE_ZSH_DAYS=14
 # Display red dots whilst waiting for completion.
 COMPLETION_WAITING_DOTS="true"
 
-export PATH=$HOME/bin:/usr/local/bin:$HOME/.local/bin:$PATH
+export PATH=$HOME/bin:/usr/local/bin:$HOME/.local/bin:$PATH:$HOME/.cargo/bin
 # export MANPATH="/usr/local/man:$MANPATH"
 
 export EDITOR="vim"
@@ -174,6 +174,10 @@ sshuntil() {
       sleep 3
   done
 }
+
+
+# ssh to legacy targets
+alias sshold='OPENSSL_CONF=/dev/null ssh'
 
 # ---------- ALIAS gvim ---------- #
 alias gvimtab="gvim -p"
@@ -354,13 +358,35 @@ function dirsum() {
 
 function keyinfo {
   key="$1"
-  openssl pkey -in "$key" -text -noout
+  openssl pkey -text -noout -in "$key"
 }
 
 # see details x509 cert
 function certinfo() {
   cert="$1"
   openssl x509 -text -noout -in "$cert"
+}
+
+function certpub() {
+  [[ -n $1 && -n $2 ]] || {
+    echo "usage certpub <cert> <output-path>"
+    exit 1
+  }
+  local cert=$1
+  local output_file=$2
+
+  openssl x509 -in "${cert}" -pubkey -noout -out "${output_file}"
+}
+
+function keypub() {
+  [[ -n $1 && -n $2 ]] || {
+    echo "usage certpub <cert> <output-path>"
+    exit 1
+  }
+  local key=$1
+  local output_file=$2
+
+  openssl pkey -in "${key}" -pubout -out "${output_file}"
 }
 
 function csrinfo() {
@@ -382,6 +408,19 @@ function sshkeyinfo {
 function sshcertinfo {
   cert="$1"
   ssh-keygen -L -f "$cert"
+}
+
+md2pdf() {
+  if (( $# == 0 )); then
+    echo "usage: md2pdf <file.md> [more.md ...]" >&2
+    return 1
+  fi
+  local f
+  for f in "$@"; do
+    [[ -f $f ]] || { echo "md2pdf: no such file: $f" >&2; continue; }
+    pandoc "$f" -s -o "${f:r}.pdf" --pdf-engine=weasyprint \
+      --metadata title="${f:t:r}" && echo "→ ${f:r}.pdf"
+  done
 }
 
 ######################
@@ -457,7 +496,7 @@ source <(jj util completion zsh)
 
 alias js="jj status"
 alias jl="jj log"
-alias jla="jj log 'all()'"
+alias jla="jj log -r 'all()'"
 alias jll="jj log --stat"
 alias jlog="watch -n 1 --color jj log --color=always"
 alias je="jj edit"
@@ -477,6 +516,8 @@ alias jba="jj bookmark advance"
 alias jbl="jj bookmark list"
 alias jbt="jj bookmark track"
 alias jdiff="jj diffedit --tool meld"
+alias jdiffm="jj diffedit --tool meld --from master --to @"
+alias jfeat="jj log -r 'parents(dev-merge)' --no-graph"
 
 # Prepopulate description with ticket number of nearest bookmark
 jdd() {
@@ -516,3 +557,4 @@ function jbfeat() {
 if [[ -f ~/.myconfig/local/.zshrc ]]; then
     source ~/.myconfig/local/.zshrc
 fi
+

@@ -1,0 +1,27 @@
+zsh
+git
+jj (jj-cli)
+pandoc
+weasyprint
+xclip
+vim-enhanced
+vim-X11
+meld
+nemo
+dolphin
+openssl
+openssh-clients
+gnupg2
+docker
+docker-compose
+wireguard-tools
+procps-ng
+rustup
+python3
+thefuck
+unzip
+bzip2
+gzip
+p7zip-plugins
+ncompress
+unrar
