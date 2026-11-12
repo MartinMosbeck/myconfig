@@ -1,0 +1,35 @@
+[user]
+name = "Martin Mosbeck"
+email = "mmo@mission-embedded.com"
+
+
+[merge-tools.meld]
+program = "meld"
+diff-args  = ["$left", "$right"]           # jj diff --tool meld
+edit-args  = ["--newtab", "$left", "$right"] # jj diffedit --tool meld
+merge-args = ["$left", "$base", "$right", "-o", "$output"]  # jj resolve
+
+[ui]
+editor= "vim"
+merge-editor = "meld"
+diff-formatter = "meld"
+diff-instructions = false
+graph.style = "square"
+default-command = "log"
+bookmark-list-sort-keys = ["committer-date"]
+
+[colors]
+change_id = "red"
+"working_copy change_id" = { underline = false, bold = true }
+
+[snapshot]
+# Do not track automatic all files
+auto-track = "none()"
+
+# Inside Claude Code shells (CLAUDECODE=1): no GUI/editor popups.
+# Interactive terminals keep meld + vim.
+[[--scope]]
+--when.environments = ["CLAUDECODE=1"]
+ui.diff-formatter = ":git"
+ui.editor = "true"
+ui.paginate = "never"
